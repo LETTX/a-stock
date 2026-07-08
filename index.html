@@ -3,196 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>A股行情</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
+        html, body { height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            background: linear-gradient(180deg, #0a0f1a 0%, #1a1f3a 50%, #0f172a 100%);
             position: relative;
         }
         
         body::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
+                radial-gradient(ellipse at top center, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
             pointer-events: none;
         }
         
         .glass-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .index-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        .text-green {
-            color: #22c55e;
-        }
-        
-        .text-red {
-            color: #ef4444;
-        }
+        .text-green { color: #22c55e; }
+        .text-red { color: #ef4444; }
         
         .shimmer {
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
         
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
         .rank-badge {
-            width: 18px;
-            height: 18px;
+            width: 16px; height: 16px;
             border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; flex-shrink: 0;
         }
         
         .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
         .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; }
         .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
-        .rank-other { background: rgba(255,255,255,0.1); color: #94a3b8; }
+        .rank-other { background: rgba(255,255,255,0.08); color: #94a3b8; }
+        
+        .pulse-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        
+        .stock-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 0;
+        }
+        
+        .stock-item {
+            flex-shrink: 1;
+            min-height: 0;
+        }
     </style>
 </head>
 <body class="text-white">
     <div class="h-full flex flex-col px-3 py-2 relative z-10">
-        <header class="flex items-center justify-between mb-2">
+        <header class="flex items-center justify-between mb-2 flex-shrink-0">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-white"></i>
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-white"></i>
                 </div>
-                <h1 class="text-sm font-bold">A股行情</h1>
+                <div>
+                    <h1 class="text-sm font-bold">A股行情</h1>
+                    <div class="flex items-center gap-1.5">
+                        <div class="pulse-dot"></div>
+                        <span class="text-[10px] text-gray-400">实时更新 · 10s</span>
+                    </div>
+                </div>
             </div>
             <div class="flex items-center gap-2">
-                <span id="updateTime" class="text-xs text-gray-500">--:--:--</span>
-                <button id="refreshBtn" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
-                    <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-400"></i>
+                <span id="updateTime" class="text-xs text-gray-400 font-mono">--:--:--</span>
+                <button id="refreshBtn" class="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 active:scale-95">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-gray-300"></i>
                 </button>
             </div>
         </header>
 
-        <div class="glass-card rounded-xl p-2 mb-2">
-            <div class="grid grid-cols-3 gap-2">
-                <div id="shIndex" class="shimmer rounded-lg p-2 h-16"></div>
-                <div id="cyIndex" class="shimmer rounded-lg p-2 h-16"></div>
-                <div id="kcIndex" class="shimmer rounded-lg p-2 h-16"></div>
-            </div>
+        <div class="grid grid-cols-3 gap-2 mb-2 flex-shrink-0">
+            <div id="shIndex" class="index-card rounded-xl px-3 py-2.5 h-[72px] shimmer"></div>
+            <div id="cyIndex" class="index-card rounded-xl px-3 py-2.5 h-[72px] shimmer"></div>
+            <div id="kcIndex" class="index-card rounded-xl px-3 py-2.5 h-[72px] shimmer"></div>
         </div>
 
-        <div class="glass-card rounded-xl p-2 mb-2">
-            <div class="flex items-center gap-1.5 mb-1.5">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i>
-                <h2 class="text-xs font-medium text-gray-300">概念板块资金流向</h2>
+        <div class="glass-card rounded-xl p-2.5 mb-2 flex-shrink-0">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-5 h-5 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                    <i data-lucide="zap" class="w-3 h-3 text-yellow-400"></i>
+                </div>
+                <h2 class="text-xs font-semibold">概念板块资金流向</h2>
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <div class="flex flex-col min-h-0">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                        <span class="text-xs text-red-500 font-medium">流入 TOP5</span>
+                <div>
+                    <div class="flex items-center gap-1.5 mb-1.5">
+                        <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                        <span class="text-[11px] font-medium text-red-400">主力流入 TOP5</span>
                     </div>
                     <div id="inflowList" class="space-y-1">
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
                     </div>
                 </div>
-                <div class="flex flex-col min-h-0">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        <span class="text-xs text-green-500 font-medium">流出 TOP5</span>
+                <div>
+                    <div class="flex items-center gap-1.5 mb-1.5">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span class="text-[11px] font-medium text-green-400">主力流出 TOP5</span>
                     </div>
                     <div id="outflowList" class="space-y-1">
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
-                        <div class="shimmer rounded px-2 py-1 h-7"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
+                        <div class="shimmer rounded-lg px-2.5 py-1.5 h-8"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="glass-card rounded-xl p-2 flex-1 flex flex-col min-h-0">
-            <div class="flex items-center gap-1.5 mb-1.5">
-                <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-400"></i>
-                <h2 class="text-xs font-medium text-gray-300">个股资金流向</h2>
+        <div class="glass-card rounded-xl p-2.5 flex-1 flex flex-col min-h-0">
+            <div class="flex items-center gap-2 mb-2 flex-shrink-0">
+                <div class="w-5 h-5 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <i data-lucide="bar-chart-3" class="w-3 h-3 text-blue-400"></i>
+                </div>
+                <h2 class="text-xs font-semibold">个股资金流向</h2>
             </div>
             <div class="grid grid-cols-2 gap-2 flex-1 min-h-0">
                 <div class="flex flex-col min-h-0">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                        <span class="text-xs text-red-500 font-medium">净流入 TOP10</span>
+                    <div class="flex items-center gap-1.5 mb-1.5 flex-shrink-0">
+                        <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                        <span class="text-[11px] font-medium text-red-400">净流入 TOP10</span>
                     </div>
-                    <div id="stockInflowList" class="space-y-0.5 flex-1 overflow-hidden">
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
+                    <div id="stockInflowList" class="stock-list">
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
                     </div>
                 </div>
                 <div class="flex flex-col min-h-0">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                        <span class="text-xs text-green-500 font-medium">净流出 TOP10</span>
+                    <div class="flex items-center gap-1.5 mb-1.5 flex-shrink-0">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span class="text-[11px] font-medium text-green-400">净流出 TOP10</span>
                     </div>
-                    <div id="stockOutflowList" class="space-y-0.5 flex-1 overflow-hidden">
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
-                        <div class="shimmer rounded px-2 py-1 h-8"></div>
+                    <div id="stockOutflowList" class="stock-list">
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
+                        <div class="shimmer rounded-lg px-2 py-1 flex-1 min-h-0"></div>
                     </div>
                 </div>
             </div>
@@ -202,7 +213,7 @@
     <script>
         lucide.createIcons();
 
-        const REFRESH_INTERVAL = 30000;
+        const REFRESH_INTERVAL = 10000;
         let refreshTimer = null;
         let jsonpCounter = 0;
 
@@ -212,19 +223,13 @@
             's_sh000688': { id: 'kcIndex', name: '科创50' }
         };
 
-        function formatPrice(price) {
-            return parseFloat(price).toFixed(2);
-        }
+        function formatPrice(price) { return parseFloat(price).toFixed(2); }
 
         function formatMoney(money) {
             const val = parseFloat(money);
             const absVal = Math.abs(val);
-            if (absVal >= 100000000) {
-                return (val / 100000000).toFixed(1) + '亿';
-            }
-            if (absVal >= 10000) {
-                return (val / 10000).toFixed(1) + '万';
-            }
+            if (absVal >= 100000000) return (val / 100000000).toFixed(1) + '亿';
+            if (absVal >= 10000) return (val / 10000).toFixed(1) + '万';
             return val.toFixed(0);
         }
 
@@ -234,28 +239,15 @@
             return sign + val.toFixed(2) + '%';
         }
 
-        function getColorClass(value) {
-            return parseFloat(value) >= 0 ? 'text-red' : 'text-green';
-        }
+        function getColorClass(value) { return parseFloat(value) >= 0 ? 'text-red' : 'text-green'; }
 
         function jsonp(url, callbackParam = 'callback') {
             return new Promise((resolve, reject) => {
                 const callbackName = `jsonpCallback_${Date.now()}_${jsonpCounter++}`;
                 const script = document.createElement('script');
-                
-                window[callbackName] = function(data) {
-                    resolve(data);
-                    delete window[callbackName];
-                    script.remove();
-                };
-                
+                window[callbackName] = function(data) { resolve(data); delete window[callbackName]; script.remove(); };
                 script.src = url + (url.includes('?') ? '&' : '?') + `${callbackParam}=${callbackName}`;
-                script.onerror = function() {
-                    reject(new Error('JSONP request failed'));
-                    delete window[callbackName];
-                    script.remove();
-                };
-                
+                script.onerror = function() { reject(new Error('JSONP request failed')); delete window[callbackName]; script.remove(); };
                 document.head.appendChild(script);
             });
         }
@@ -264,27 +256,18 @@
             return new Promise((resolve) => {
                 const script = document.createElement('script');
                 const codes = Object.keys(indexConfig).join(',');
-                
                 script.src = `https://hq.sinajs.cn/list=${codes}`;
                 script.charset = 'gbk';
-                
                 script.onload = function() {
                     const results = {};
                     for (const code of Object.keys(indexConfig)) {
                         const varName = `hq_str_${code}`;
-                        if (window[varName] !== undefined) {
-                            results[code] = window[varName];
-                        }
+                        if (window[varName] !== undefined) results[code] = window[varName];
                     }
                     resolve(results);
                     script.remove();
                 };
-                
-                script.onerror = function() {
-                    resolve(null);
-                    script.remove();
-                };
-                
+                script.onerror = function() { resolve(null); script.remove(); };
                 document.head.appendChild(script);
             });
         }
@@ -293,17 +276,15 @@
             const parts = dataStr.split(',');
             const price = parts[1] || '0';
             const changePercent = parts[3] || '0';
-            
             const colorClass = getColorClass(changePercent);
             const icon = parseFloat(changePercent) >= 0 ? 'trending-up' : 'trending-down';
-            
             document.getElementById(config.id).innerHTML = `
                 <div class="flex flex-col h-full justify-between">
-                    <div class="text-xs text-gray-500">${config.name}</div>
-                    <div class="text-base font-bold leading-tight">${formatPrice(price)}</div>
-                    <div class="flex items-center gap-1 ${colorClass}">
+                    <div class="text-[11px] text-gray-400 font-medium">${config.name}</div>
+                    <div class="text-base font-bold leading-tight tracking-tight">${formatPrice(price)}</div>
+                    <div class="flex items-center gap-0.5 ${colorClass}">
                         <i data-lucide="${icon}" class="w-3 h-3"></i>
-                        <span class="text-xs font-medium">${formatPercent(changePercent)}</span>
+                        <span class="text-[11px] font-semibold">${formatPercent(changePercent)}</span>
                     </div>
                 </div>
             `;
@@ -316,18 +297,16 @@
                 { id: 'cyIndex', name: '创业板指', price: '3845.35', changePercent: '-1.70' },
                 { id: 'kcIndex', name: '科创50', price: '2016.23', changePercent: '0.73' }
             ];
-            
             mockData.forEach(item => {
                 const colorClass = getColorClass(item.changePercent);
                 const icon = parseFloat(item.changePercent) >= 0 ? 'trending-up' : 'trending-down';
-                
                 document.getElementById(item.id).innerHTML = `
                     <div class="flex flex-col h-full justify-between">
-                        <div class="text-xs text-gray-500">${item.name}</div>
-                        <div class="text-base font-bold leading-tight">${item.price}</div>
-                        <div class="flex items-center gap-1 ${colorClass}">
+                        <div class="text-[11px] text-gray-400 font-medium">${item.name}</div>
+                        <div class="text-base font-bold leading-tight tracking-tight">${item.price}</div>
+                        <div class="flex items-center gap-0.5 ${colorClass}">
                             <i data-lucide="${icon}" class="w-3 h-3"></i>
-                            <span class="text-xs font-medium">${formatPercent(item.changePercent)}</span>
+                            <span class="text-[11px] font-semibold">${formatPercent(item.changePercent)}</span>
                         </div>
                     </div>
                 `;
@@ -338,17 +317,18 @@
         function renderSectorList(containerId, data, isInflow) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-            
             data.slice(0, 5).forEach((item, index) => {
+                const changeColorClass = getColorClass(item.changePercent);
                 const el = document.createElement('div');
-                el.className = `flex items-center justify-between px-2 py-1 rounded-md ${isInflow ? 'bg-red-500/5 border-l border-red-500/40' : 'bg-green-500/5 border-l border-green-500/40'}`;
+                el.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg ${isInflow ? 'bg-red-500/5 border-l border-red-500/50' : 'bg-green-500/5 border-l border-green-500/50'}`;
                 el.innerHTML = `
                     <div class="flex items-center gap-1.5 min-w-0 flex-1">
                         <div class="rank-badge rank-other">${index + 1}</div>
                         <span class="text-xs font-medium truncate">${item.name}</span>
                     </div>
-                    <div class="text-xs font-semibold ${isInflow ? 'text-red' : 'text-green'} flex-shrink-0 ml-2">
-                        ${isInflow ? '+' : '-'}${formatMoney(item.money)}
+                    <div class="flex flex-col items-end flex-shrink-0">
+                        <span class="text-[11px] font-semibold ${isInflow ? 'text-red' : 'text-green'}">${isInflow ? '+' : '-'}${formatMoney(item.money)}</span>
+                        <span class="text-[10px] ${changeColorClass}">${formatPercent(item.changePercent)}</span>
                     </div>
                 `;
                 container.appendChild(el);
@@ -360,24 +340,9 @@
             try {
                 const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62';
                 const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62';
-                
-                const [inflowData, outflowData] = await Promise.all([
-                    jsonp(inflowUrl, 'cb'),
-                    jsonp(outflowUrl, 'cb')
-                ]);
-                
-                const inflowList = (inflowData.data?.diff || []).map(item => ({
-                    name: item.f14,
-                    money: item.f62,
-                    changePercent: item.f3
-                }));
-                
-                const outflowList = (outflowData.data?.diff || []).map(item => ({
-                    name: item.f14,
-                    money: Math.abs(item.f62),
-                    changePercent: item.f3
-                }));
-                
+                const [inflowData, outflowData] = await Promise.all([jsonp(inflowUrl, 'cb'), jsonp(outflowUrl, 'cb')]);
+                const inflowList = (inflowData.data?.diff || []).map(item => ({ name: item.f14, money: item.f62, changePercent: item.f3 }));
+                const outflowList = (outflowData.data?.diff || []).map(item => ({ name: item.f14, money: Math.abs(item.f62), changePercent: item.f3 }));
                 renderSectorList('inflowList', inflowList, true);
                 renderSectorList('outflowList', outflowList, false);
             } catch (error) {
@@ -388,21 +353,19 @@
 
         function renderMockSectors() {
             const inflowMock = [
-                { name: 'AI大模型', money: '3256000000', changePercent: '3.52' },
-                { name: '半导体设备', money: '2890000000', changePercent: '2.87' },
-                { name: '人形机器人', money: '2150000000', changePercent: '4.23' },
-                { name: '算力租赁', money: '1890000000', changePercent: '2.15' },
-                { name: '存储芯片', money: '1560000000', changePercent: '1.98' }
+                { name: 'AI大模型', money: '32.6亿', changePercent: '3.52' },
+                { name: '半导体设备', money: '28.9亿', changePercent: '2.87' },
+                { name: '人形机器人', money: '21.5亿', changePercent: '4.23' },
+                { name: '算力租赁', money: '18.9亿', changePercent: '2.15' },
+                { name: '存储芯片', money: '15.6亿', changePercent: '1.98' }
             ];
-            
             const outflowMock = [
-                { name: '煤炭概念', money: '1850000000', changePercent: '-1.56' },
-                { name: '房地产', money: '1520000000', changePercent: '-1.23' },
-                { name: '银行', money: '1280000000', changePercent: '-0.87' },
-                { name: '保险', money: '985000000', changePercent: '-0.65' },
-                { name: '钢铁', money: '765000000', changePercent: '-0.98' }
+                { name: '煤炭概念', money: '18.5亿', changePercent: '-1.56' },
+                { name: '房地产', money: '15.2亿', changePercent: '-1.23' },
+                { name: '银行', money: '12.8亿', changePercent: '-0.87' },
+                { name: '保险', money: '9.9亿', changePercent: '-0.65' },
+                { name: '钢铁', money: '7.7亿', changePercent: '-0.98' }
             ];
-            
             renderSectorList('inflowList', inflowMock, true);
             renderSectorList('outflowList', outflowMock, false);
         }
@@ -410,24 +373,24 @@
         function renderStockList(containerId, data, isInflow) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-            
+            container.className = 'stock-list';
             data.slice(0, 10).forEach((item, index) => {
                 const changeColorClass = getColorClass(item.changePercent);
                 const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-other';
-                
                 const el = document.createElement('div');
-                el.className = `flex items-center gap-1.5 px-2 py-1 rounded-md ${isInflow ? 'bg-red-500/5 border-l border-red-500/30' : 'bg-green-500/5 border-l border-green-500/30'}`;
+                el.className = `stock-item flex items-center gap-1.5 px-2 rounded-lg ${isInflow ? 'bg-red-500/5 border-l border-red-500/40' : 'bg-green-500/5 border-l border-green-500/40'}`;
                 el.innerHTML = `
                     <div class="rank-badge ${rankClass}">${index + 1}</div>
                     <div class="flex-1 min-w-0">
-                        <div class="text-xs font-medium truncate leading-tight">${item.name}</div>
-                        <div class="text-[10px] text-gray-500 truncate">${item.sector}</div>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <div class="text-xs font-semibold ${isInflow ? 'text-red' : 'text-green'}">
-                            ${isInflow ? '+' : '-'}${formatMoney(item.money)}
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs font-medium truncate">${item.name}</span>
+                            <span class="text-[9px] text-gray-500 font-mono">${item.code}</span>
                         </div>
-                        <div class="text-[10px] ${changeColorClass}">${formatPercent(item.changePercent)}</div>
+                        <div class="text-[9px] text-gray-500 truncate">${item.sector}</div>
+                    </div>
+                    <div class="flex flex-col items-end flex-shrink-0">
+                        <span class="text-[11px] font-semibold ${isInflow ? 'text-red' : 'text-green'}">${isInflow ? '+' : '-'}${formatMoney(item.money)}</span>
+                        <span class="text-[9px] ${changeColorClass}">${formatPercent(item.changePercent)}</span>
                     </div>
                 `;
                 container.appendChild(el);
@@ -439,30 +402,9 @@
             try {
                 const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100';
                 const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100';
-                
-                const [inflowData, outflowData] = await Promise.all([
-                    jsonp(inflowUrl, 'cb'),
-                    jsonp(outflowUrl, 'cb')
-                ]);
-                
-                const inflowList = (inflowData.data?.diff || []).map(item => ({
-                    code: item.f12,
-                    name: item.f14,
-                    price: item.f2,
-                    changePercent: item.f3,
-                    money: item.f62,
-                    sector: item.f100 || '-'
-                }));
-                
-                const outflowList = (outflowData.data?.diff || []).map(item => ({
-                    code: item.f12,
-                    name: item.f14,
-                    price: item.f2,
-                    changePercent: item.f3,
-                    money: Math.abs(item.f62),
-                    sector: item.f100 || '-'
-                }));
-                
+                const [inflowData, outflowData] = await Promise.all([jsonp(inflowUrl, 'cb'), jsonp(outflowUrl, 'cb')]);
+                const inflowList = (inflowData.data?.diff || []).map(item => ({ code: item.f12, name: item.f14, price: item.f2, changePercent: item.f3, money: item.f62, sector: item.f100 || '-' }));
+                const outflowList = (outflowData.data?.diff || []).map(item => ({ code: item.f12, name: item.f14, price: item.f2, changePercent: item.f3, money: Math.abs(item.f62), sector: item.f100 || '-' }));
                 renderStockList('stockInflowList', inflowList, true);
                 renderStockList('stockOutflowList', outflowList, false);
             } catch (error) {
@@ -473,31 +415,29 @@
 
         function renderMockStocks() {
             const inflowMock = [
-                { name: '中芯国际', changePercent: '5.68', money: '895000000', sector: '半导体' },
-                { name: '寒武纪', changePercent: '8.95', money: '618000000', sector: 'AI芯片' },
-                { name: '海光信息', changePercent: '7.23', money: '542000000', sector: 'CPU' },
-                { name: '金山办公', changePercent: '4.52', money: '452000000', sector: '信创' },
-                { name: '科大讯飞', changePercent: '3.85', money: '428000000', sector: 'AI大模型' },
-                { name: '北方华创', changePercent: '2.96', money: '395000000', sector: '半导体设备' },
-                { name: '韦尔股份', changePercent: '3.12', money: '368000000', sector: 'CIS芯片' },
-                { name: '兆易创新', changePercent: '2.45', money: '325000000', sector: '存储芯片' },
-                { name: '澜起科技', changePercent: '4.18', money: '298000000', sector: '内存接口' },
-                { name: '长电科技', changePercent: '1.87', money: '276000000', sector: '封装测试' }
+                { code: '688981', name: '中芯国际', changePercent: '5.68', money: '8.95亿', sector: '半导体' },
+                { code: '688256', name: '寒武纪', changePercent: '8.95', money: '6.18亿', sector: 'AI芯片' },
+                { code: '603019', name: '中科曙光', changePercent: '7.23', money: '5.42亿', sector: '算力' },
+                { code: '688111', name: '金山办公', changePercent: '4.52', money: '4.52亿', sector: '信创' },
+                { code: '002230', name: '科大讯飞', changePercent: '3.85', money: '4.28亿', sector: 'AI大模型' },
+                { code: '002371', name: '北方华创', changePercent: '2.96', money: '3.95亿', sector: '半导体设备' },
+                { code: '603501', name: '韦尔股份', changePercent: '3.12', money: '3.68亿', sector: 'CIS芯片' },
+                { code: '603986', name: '兆易创新', changePercent: '2.45', money: '3.25亿', sector: '存储芯片' },
+                { code: '688008', name: '澜起科技', changePercent: '4.18', money: '2.98亿', sector: '内存接口' },
+                { code: '600584', name: '长电科技', changePercent: '1.87', money: '2.76亿', sector: '封装测试' }
             ];
-            
             const outflowMock = [
-                { name: '贵州茅台', changePercent: '-1.25', money: '1256000000', sector: '白酒' },
-                { name: '宁德时代', changePercent: '-2.15', money: '1023000000', sector: '锂电池' },
-                { name: '中国平安', changePercent: '-0.56', money: '654000000', sector: '保险' },
-                { name: '隆基绿能', changePercent: '-3.25', money: '523000000', sector: '光伏' },
-                { name: '比亚迪', changePercent: '-1.89', money: '482000000', sector: '新能源汽车' },
-                { name: '招商银行', changePercent: '-0.85', money: '427000000', sector: '银行' },
-                { name: '药明康德', changePercent: '-2.31', money: '389000000', sector: 'CRO' },
-                { name: '海康威视', changePercent: '-1.12', money: '356000000', sector: '安防' },
-                { name: '中国中免', changePercent: '-2.78', money: '312000000', sector: '免税' },
-                { name: '万科A', changePercent: '-1.56', money: '285000000', sector: '房地产' }
+                { code: '600519', name: '贵州茅台', changePercent: '-1.25', money: '12.56亿', sector: '白酒' },
+                { code: '300750', name: '宁德时代', changePercent: '-2.15', money: '10.23亿', sector: '锂电池' },
+                { code: '601318', name: '中国平安', changePercent: '-0.56', money: '6.54亿', sector: '保险' },
+                { code: '601012', name: '隆基绿能', changePercent: '-3.25', money: '5.23亿', sector: '光伏' },
+                { code: '002594', name: '比亚迪', changePercent: '-1.89', money: '4.82亿', sector: '新能源汽车' },
+                { code: '600036', name: '招商银行', changePercent: '-0.85', money: '4.27亿', sector: '银行' },
+                { code: '603259', name: '药明康德', changePercent: '-2.31', money: '3.89亿', sector: 'CRO' },
+                { code: '002415', name: '海康威视', changePercent: '-1.12', money: '3.56亿', sector: '安防' },
+                { code: '601888', name: '中国中免', changePercent: '-2.78', money: '3.12亿', sector: '免税' },
+                { code: '000002', name: '万科A', changePercent: '-1.56', money: '2.85亿', sector: '房地产' }
             ];
-            
             renderStockList('stockInflowList', inflowMock, true);
             renderStockList('stockOutflowList', outflowMock, false);
         }
@@ -513,19 +453,15 @@
         async function refreshData() {
             const refreshBtn = document.getElementById('refreshBtn');
             refreshBtn.querySelector('svg').classList.add('animate-spin');
-            
             try {
                 const sinaData = await fetchSinaIndices();
                 if (sinaData) {
                     for (const [code, config] of Object.entries(indexConfig)) {
-                        if (sinaData[code]) {
-                            renderIndex(sinaData[code], config);
-                        }
+                        if (sinaData[code]) renderIndex(sinaData[code], config);
                     }
                 } else {
                     renderMockIndices();
                 }
-                
                 await Promise.all([fetchSectors(), fetchStocks()]);
                 updateTime();
             } catch (e) {
@@ -534,10 +470,7 @@
                 renderMockSectors();
                 renderMockStocks();
             }
-            
-            setTimeout(() => {
-                refreshBtn.querySelector('svg').classList.remove('animate-spin');
-            }, 500);
+            setTimeout(() => { refreshBtn.querySelector('svg').classList.remove('animate-spin'); }, 500);
         }
 
         document.getElementById('refreshBtn').addEventListener('click', refreshData);
