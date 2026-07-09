@@ -268,7 +268,7 @@
         function renderIndex(dataStr, config) {
             const parts = dataStr.split('~');
             const price = parts[3] || '0';
-            const changePercent = parts[30] || '0';
+            const changePercent = parts[32] || '0';
             const colorClass = getColorClass(changePercent);
             const icon = parseFloat(changePercent) >= 0 ? 'trending-up' : 'trending-down';
             document.getElementById(config.id).innerHTML = `
