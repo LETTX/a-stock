@@ -211,9 +211,9 @@
         let jsonpCounter = 0;
 
         const indexConfig = {
-            's_sh000001': { id: 'shIndex', name: '上证指数' },
-            's_sz399006': { id: 'cyIndex', name: '创业板指' },
-            's_sh000688': { id: 'kcIndex', name: '科创50' }
+            'sh000001': { id: 'shIndex', name: '上证指数' },
+            'sz399006': { id: 'cyIndex', name: '创业板指' },
+            'sh000688': { id: 'kcIndex', name: '科创50' }
         };
 
         function formatPrice(price) { return parseFloat(price).toFixed(2); }
@@ -249,12 +249,12 @@
             return new Promise((resolve) => {
                 const script = document.createElement('script');
                 const codes = Object.keys(indexConfig).join(',');
-                script.src = `https://hq.sinajs.cn/list=${codes}`;
+                script.src = `https://qt.gtimg.cn/q=${codes}&_t=${Date.now()}`;
                 script.charset = 'gbk';
                 script.onload = function() {
                     const results = {};
                     for (const code of Object.keys(indexConfig)) {
-                        const varName = `hq_str_${code}`;
+                        const varName = `v_${code}`;
                         if (window[varName] !== undefined) results[code] = window[varName];
                     }
                     resolve(results);
@@ -266,9 +266,9 @@
         }
 
         function renderIndex(dataStr, config) {
-            const parts = dataStr.split(',');
-            const price = parts[1] || '0';
-            const changePercent = parts[3] || '0';
+            const parts = dataStr.split('~');
+            const price = parts[3] || '0';
+            const changePercent = parts[30] || '0';
             const colorClass = getColorClass(changePercent);
             const icon = parseFloat(changePercent) >= 0 ? 'trending-up' : 'trending-down';
             document.getElementById(config.id).innerHTML = `
@@ -332,8 +332,8 @@
 
         async function fetchSectors() {
             try {
-                const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62';
-                const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62';
+                const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62&_t=' + Date.now();
+                const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:90+t:3&fields=f12,f14,f2,f3,f62&_t=' + Date.now();
                 const [inflowData, outflowData] = await Promise.all([jsonp(inflowUrl, 'cb'), jsonp(outflowUrl, 'cb')]);
                 const inflowList = (inflowData.data?.diff || []).map(item => ({ name: item.f14, money: item.f62, changePercent: item.f3 }));
                 const outflowList = (outflowData.data?.diff || []).map(item => ({ name: item.f14, money: Math.abs(item.f62), changePercent: item.f3 }));
@@ -394,8 +394,8 @@
 
         async function fetchStocks() {
             try {
-                const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100';
-                const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100';
+                const inflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100&_t=' + Date.now();
+                const outflowUrl = 'https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=0&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fid=f62&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f14,f2,f3,f62,f100&_t=' + Date.now();
                 const [inflowData, outflowData] = await Promise.all([jsonp(inflowUrl, 'cb'), jsonp(outflowUrl, 'cb')]);
                 const inflowList = (inflowData.data?.diff || []).map(item => ({ code: item.f12, name: item.f14, price: item.f2, changePercent: item.f3, money: item.f62, sector: item.f100 || '-' }));
                 const outflowList = (outflowData.data?.diff || []).map(item => ({ code: item.f12, name: item.f14, price: item.f2, changePercent: item.f3, money: Math.abs(item.f62), sector: item.f100 || '-' }));
